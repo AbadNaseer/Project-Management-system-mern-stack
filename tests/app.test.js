@@ -3,7 +3,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const jsonfile = require('jsonfile');
-const app = require('../app'); // Assuming your main file is app.js
+const app = require('../index'); 
 const userDataFile = './users.json';
 
 // Helper function to reset users data
