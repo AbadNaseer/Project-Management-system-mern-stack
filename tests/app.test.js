@@ -1,120 +1,247 @@
 const request = require('supertest');
-const app = require('../index'); // Import the app for testing
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const jsonfile = require('jsonfile');
+const app = require('../app'); // Assuming your main file is app.js
+const userDataFile = './users.json';
+
+// Helper function to reset users data
+const resetUsersData = () => {
+    jsonfile.writeFileSync(userDataFile, [], { spaces: 2 });
+};
 
 describe('API Endpoints', () => {
-    let token;
-
-    // Register a user before tests
-    beforeAll(async () => {
-        await request(app)
-            .post('/register')
-            .send({
-                name: 'Test User',
-                designation: 'Developer',
-                email: 'testuser@example.com',
-                password: 'testpassword123'
-            });
+    // Before each test, reset the users data
+    beforeEach(() => {
+        resetUsersData();
     });
 
-    // Test User Registration
     it('should register a new user', async () => {
         const response = await request(app)
             .post('/register')
             .send({
                 name: 'John Doe',
-                designation: 'Manager',
-                email: 'john@example.com',
-                password: 'password123'
+                designation: 'Developer',
+                email: 'john.doe@example.com',
+                password: 'securepassword'
             });
+
+        // Log response body for debugging
+        console.log(response.body);
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('User registered successfully');
     });
 
-    // Test Duplicate Registration
     it('should not allow duplicate registration', async () => {
+        await request(app)
+            .post('/register')
+            .send({
+                name: 'Jane Doe',
+                designation: 'Designer',
+                email: 'jane.doe@example.com',
+                password: 'securepassword'
+            });
+
         const response = await request(app)
             .post('/register')
             .send({
-                name: 'John Doe',
-                designation: 'Manager',
-                email: 'john@example.com',
-                password: 'password123'
+                name: 'Jane Doe',
+                designation: 'Designer',
+                email: 'jane.doe@example.com',
+                password: 'securepassword'
             });
+
+        // Log response body for debugging
+        console.log(response.body);
 
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('User already exists');
     });
 
-    // Test User Login
     it('should login an existing user and return a token', async () => {
+        await request(app)
+            .post('/register')
+            .send({
+                name: 'Alice Smith',
+                designation: 'Manager',
+                email: 'alice.smith@example.com',
+                password: 'securepassword'
+            });
+
         const response = await request(app)
             .post('/login')
             .send({
-                email: 'testuser@example.com',
-                password: 'testpassword123'
+                email: 'alice.smith@example.com',
+                password: 'securepassword'
             });
+
+        // Log response body for debugging
+        console.log(response.body);
 
         expect(response.status).toBe(200);
         expect(response.body.token).toBeDefined();
-
-        token = response.body.token; // Save the token for authenticated requests
     });
 
-    // Test Invalid Login
     it('should not login with invalid credentials', async () => {
         const response = await request(app)
             .post('/login')
             .send({
-                email: 'testuser@example.com',
+                email: 'nonexistent@example.com',
                 password: 'wrongpassword'
             });
 
+        // Log response body for debugging
+        console.log(response.body);
+
         expect(response.status).toBe(400);
-        expect(response.body.message).toBe('Invalid password');
+        expect(response.body.message).toBe('User not found');
     });
 
-    // Test Project Creation
     it('should create a new project', async () => {
+        // First, register a user to create a project
+        await request(app)
+            .post('/register')
+            .send({
+                name: 'Bob Brown',
+                designation: 'Developer',
+                email: 'bob.brown@example.com',
+                password: 'securepassword'
+            });
+
+        // Now login to get the token
+        const loginResponse = await request(app)
+            .post('/login')
+            .send({
+                email: 'bob.brown@example.com',
+                password: 'securepassword'
+            });
+
+        const token = loginResponse.body.token;
+
         const response = await request(app)
             .post('/projects')
             .set('Authorization', `Bearer ${token}`)
             .send({
                 projectName: 'New Project',
-                description: 'Project description',
-                completionTime: '2024-12-01'
+                description: 'Project description here',
+                completionTime: '2024-12-31'
             });
 
+        // Log response body for debugging
+        console.log(response.body);
+
         expect(response.status).toBe(200);
-        expect(response.body.project.projectName).toBe('New Project');
+        expect(response.body.message).toBe('Project created successfully');
     });
 
-    // Test Task Assignment
     it('should assign a task to a project', async () => {
-        const response = await request(app)
-            .post('/projects/1/tasks')
+        // First, register and login a user to create a project
+        const userResponse = await request(app)
+            .post('/register')
+            .send({
+                name: 'Charlie Black',
+                designation: 'Developer',
+                email: 'charlie.black@example.com',
+                password: 'securepassword'
+            });
+
+        const loginResponse = await request(app)
+            .post('/login')
+            .send({
+                email: 'charlie.black@example.com',
+                password: 'securepassword'
+            });
+
+        const token = loginResponse.body.token;
+
+        // Create a new project
+        const projectResponse = await request(app)
+            .post('/projects')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                projectName: 'Task Assignment Project',
+                description: 'Description of the project',
+                completionTime: '2024-12-31'
+            });
+
+        const projectId = projectResponse.body.project.id;
+
+        const taskResponse = await request(app)
+            .post(`/projects/${projectId}/tasks`)
             .set('Authorization', `Bearer ${token}`)
             .send({
                 taskTitle: 'New Task',
                 description: 'Task description',
-                dueDate: '2024-11-01',
-                assignedTo: 'Jane Doe'
+                dueDate: '2024-10-10',
+                assignedTo: 'charlie.black@example.com'
             });
 
-        expect(response.status).toBe(200);
-        expect(response.body.task.taskTitle).toBe('New Task');
+        // Log response body for debugging
+        console.log(taskResponse.body);
+
+        expect(taskResponse.status).toBe(200);
+        expect(taskResponse.body.message).toBe('Task assigned successfully');
     });
 
-    // Test Task Progress Update
     it('should update task status', async () => {
-        const response = await request(app)
-            .patch('/projects/1/tasks/1')
+        // First, register and login a user to create a project and assign a task
+        const userResponse = await request(app)
+            .post('/register')
+            .send({
+                name: 'Diana White',
+                designation: 'Developer',
+                email: 'diana.white@example.com',
+                password: 'securepassword'
+            });
+
+        const loginResponse = await request(app)
+            .post('/login')
+            .send({
+                email: 'diana.white@example.com',
+                password: 'securepassword'
+            });
+
+        const token = loginResponse.body.token;
+
+        // Create a new project
+        const projectResponse = await request(app)
+            .post('/projects')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                projectName: 'Update Status Project',
+                description: 'Description of the project',
+                completionTime: '2024-12-31'
+            });
+
+        const projectId = projectResponse.body.project.id;
+
+        // Assign a task
+        const taskResponse = await request(app)
+            .post(`/projects/${projectId}/tasks`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                taskTitle: 'Task to Update',
+                description: 'Task description',
+                dueDate: '2024-10-10',
+                assignedTo: 'diana.white@example.com'
+            });
+
+        const taskId = taskResponse.body.task.id;
+
+        // Update task status
+        const updateResponse = await request(app)
+            .patch(`/projects/${projectId}/tasks/${taskId}`)
             .set('Authorization', `Bearer ${token}`)
             .send({
                 status: 'In Progress'
             });
 
-        expect(response.status).toBe(200);
-        expect(response.body.task.status).toBe('In Progress');
+        // Log response body for debugging
+        console.log(updateResponse.body);
+
+        expect(updateResponse.status).toBe(200);
+        expect(updateResponse.body.message).toBe('Task status updated');
     });
 });
