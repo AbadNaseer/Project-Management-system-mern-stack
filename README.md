@@ -42,7 +42,6 @@ The **Project Management System App** is a RESTful API designed to facilitate pr
 
 ## How to Run
 Start the server:
-bash
 
  1.   npm start
 
@@ -138,7 +137,8 @@ bash
 To run the tests, use the following command:
 
 
-1. npm test
+1. Run the test cases
+npm test
 
 This will execute all unit tests for the API, ensuring all functionalities are working as expected.
 GitHub Actions
