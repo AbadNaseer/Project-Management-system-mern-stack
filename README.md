@@ -37,7 +37,7 @@ The **Project Management System App** is a RESTful API designed to facilitate pr
 
 ## How to Run
 Start the server:
-    bash
+```bash
 
  1.   npm start
 
@@ -132,7 +132,7 @@ Start the server:
 
 To run the tests, use the following command:
 
-bash
+```bash
 
 1. npm test
 
