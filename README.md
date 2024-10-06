@@ -27,7 +27,9 @@ The **Project Management System App** is a RESTful API designed to facilitate pr
 
 
 
-2. npm 
+2. Run the start server command.
+    ```bash
+    npm start
 
 
 
@@ -135,7 +137,6 @@ bash
 
 To run the tests, use the following command:
 
-```bash
 
 1. npm test
 
