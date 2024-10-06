@@ -26,7 +26,10 @@ The **Project Management System App** is a RESTful API designed to facilitate pr
    cd Project-Management-system-mern-stack
 
 
-2. npm install
+
+2. npm 
+
+
 
 ## Create a users.json file in the project root directory to store user data:
 
@@ -37,7 +40,7 @@ The **Project Management System App** is a RESTful API designed to facilitate pr
 
 ## How to Run
 Start the server:
-```bash
+bash
 
  1.   npm start
 
