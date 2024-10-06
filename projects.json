@@ -1,42 +1,18 @@
 [
   {
     "id": 1,
-    "projectName": "Project Collaboration Tool",
-    "description": "A simple tool for project collaboration and task management",
-    "completionTime": "30 days",
-    "createdBy": "abad.naseerfast@gmail.com",
+    "projectName": "New Project",
+    "description": "Project description",
+    "completionTime": "2024-12-01",
+    "createdBy": "testuser@example.com",
     "tasks": [
       {
         "id": 1,
-        "taskTitle": "Set up database",
-        "description": "Create and configure the project's database schema",
-        "dueDate": "2024-10-15",
-        "assignedTo": "john.doe@example.com",
-        "status": "Not Started"
-      },
-      {
-        "id": 2,
-        "taskTitle": "Set up database",
-        "description": "Create and configure the project's database schema",
-        "dueDate": "2024-10-15",
-        "assignedTo": "john.doe@example.com",
-        "status": "Not Started"
-      },
-      {
-        "id": 3,
-        "taskTitle": "Set up database",
-        "description": "Create and configure the project's database schema",
-        "dueDate": "2024-10-15",
-        "assignedTo": "john.doe@example.com",
-        "status": "Completed"
-      },
-      {
-        "id": 4,
-        "taskTitle": "Set up database",
-        "description": "Create and configure the project's database schema",
-        "dueDate": "2024-10-15",
-        "assignedTo": "john.doe@example.com",
-        "status": "Not Started"
+        "taskTitle": "New Task",
+        "description": "Task description",
+        "dueDate": "2024-11-01",
+        "assignedTo": "Jane Doe",
+        "status": "In Progress"
       }
     ]
   }

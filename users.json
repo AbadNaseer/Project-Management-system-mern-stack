@@ -1,9 +1,16 @@
 [
   {
     "id": 1,
-    "name": "Abad Naseer",
-    "designation": "Software Engineer",
-    "email": "abad.naseerfast@gmail.com",
-    "password": "$2a$10$k15bQCDZhKUupIB3M3vClOdrySfG48p3mij3mTESDtAEf2y9zJlWK"
+    "name": "Test User",
+    "designation": "Developer",
+    "email": "testuser@example.com",
+    "password": "$2a$10$sTP..S1szmZ1B1mALhZwp.C6ADqgv0vMBhGnKx97MiKjFA/LpADRi"
+  },
+  {
+    "id": 2,
+    "name": "John Doe",
+    "designation": "Manager",
+    "email": "john@example.com",
+    "password": "$2a$10$.iCiKNNIOVAe.gDkEzeC9ugy.wem1PCmXifn0Nx5HweF7nSMggUjC"
   }
 ]

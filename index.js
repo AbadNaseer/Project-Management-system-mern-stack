@@ -28,31 +28,27 @@ const authenticateToken = (req, res, next) => {
     const authHeader = req.header('Authorization');
     if (!authHeader) return res.status(401).json({ message: 'Access Denied' });
 
-    // Extract the token from the Bearer <token> format
-    const token = authHeader.split(' ')[1];  // authHeader is expected to be 'Bearer <token>'
+    const token = authHeader.split(' ')[1];
     if (!token) return res.status(401).json({ message: 'Access Denied' });
 
     try {
         const verified = jwt.verify(token, secretKey);
-        req.user = verified;  // Add user info from the token to the request object
+        req.user = verified;
         next();
     } catch (err) {
         res.status(400).json({ message: 'Invalid Token' });
     }
 };
 
-
 // User Registration
 app.post('/register', async (req, res) => {
     const { name, designation, email, password } = req.body;
 
-    // Check if user exists
     const existingUser = users.find((user) => user.email === email);
     if (existingUser) {
         return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Hash password and save user
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -73,7 +69,6 @@ app.post('/login', async (req, res) => {
     const validPass = await bcrypt.compare(password, user.password);
     if (!validPass) return res.status(400).json({ message: 'Invalid password' });
 
-    // Create and assign JWT token
     const token = jwt.sign({ id: user.id, email: user.email }, secretKey, { expiresIn: '1h' });
     res.json({ token });
 });
@@ -138,7 +133,11 @@ app.patch('/projects/:projectId/tasks/:taskId', authenticateToken, (req, res) =>
     res.json({ message: 'Task status updated', task });
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Export the app for testing
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
+} else {
+    module.exports = app;
+}
